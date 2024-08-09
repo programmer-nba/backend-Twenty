@@ -21,6 +21,9 @@ app.use(prefix + "/me", require("./routes/me"));
 // User
 app.use(prefix + "/user", require("./routes/user")); 
 
+// Shop
+app.use(prefix + "/shop", require("./routes/shop/shop"));
+
 // Wallet Tossagun
 app.use(prefix + "/tossagun/wallet", require("./routes/tossagun/wallet"));
 app.use(prefix + "/tossagun/express", require("./routes/tossagun/express"));

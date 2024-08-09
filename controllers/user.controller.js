@@ -119,15 +119,52 @@ module.exports.deleteUser = async (req, res) => {
 	}
 };
 
+module.exports.getAdmin = async (req, res) => {
+	try {
+		const pipelint = [
+			{
+				$match: {
+					position: 'admin'
+				}
+			}
+		];
+		const user = await Users.aggregate(pipelint);
+		if (!user)
+			return res.status(403).send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+		return res.status(200).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: user });
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "มีบางอย่างผิดพลาด", status: false });
+	}
+};
+
+
 module.exports.getEmployee = async (req, res) => {
 	try {
 		const pipelint = [
 			{
 				$match: {
-					$or: [
-						{ position: 'admin' },
-						{ position: 'employee' }
-					]
+					position: 'employee'
+				}
+			}
+		];
+		const user = await Users.aggregate(pipelint);
+		if (!user)
+			return res.status(403).send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+		return res.status(200).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: user });
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "มีบางอย่างผิดพลาด", status: false });
+	}
+};
+
+module.exports.getEmployeeByShopId = async (req, res) => {
+	try {
+		const id = req.params.shopid;
+		const pipelint = [
+			{
+				$match: {
+					shop_id: id
 				}
 			}
 		];
@@ -145,7 +182,9 @@ module.exports.getCustomer = async (req, res) => {
 	try {
 		const pipelint = [
 			{
-				$match: { position: 'customer' }
+				$match: {
+					position: 'customer'
+				}
 			}
 		];
 		const user = await Users.aggregate(pipelint);

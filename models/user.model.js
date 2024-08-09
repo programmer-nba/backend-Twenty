@@ -14,6 +14,7 @@ const complexityOptions = {
 };
 
 const UserSchema = new mongoose.Schema({
+	shop_id: { type: String, required: false, default: "" },
 	prefix: { type: String, required: true },
 	fristname: { type: String, required: true },
 	lastname: { type: String, required: true },
@@ -49,6 +50,7 @@ const Users = mongoose.model("user", UserSchema);
 
 const validate = (data) => {
 	const schema = Joi.object({
+		shop_id: Joi.string().default(""),
 		prefix: Joi.string().required().label("กรอกคำนำหน้า"),
 		fristname: Joi.string().required().label("กรอกชื่อ"),
 		lastname: Joi.string().required().label("กรอกนามสกุล"),
