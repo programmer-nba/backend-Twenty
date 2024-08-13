@@ -105,7 +105,7 @@ module.exports.updateShop = async (req, res) => {
 			if (!data) {
 				return res.status(404).send({ status: false, message: "แก้ไขข้อมูลไม่สำเร็จ" })
 			} else {
-				return res.status(203).send({ status: true, message: 'แก้ไขข้อมูลสำเร็จ' })
+				return res.status(203).send({ status: true, message: 'แก้ไขข้อมูลสำเร็จ', data: data })
 			}
 		}).catch((err) => {
 			return res.status(500).send({ status: false, message: 'มีบางอย่างผิดพลาด' + id })

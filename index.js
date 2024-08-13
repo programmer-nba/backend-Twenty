@@ -24,9 +24,13 @@ app.use(prefix + "/user", require("./routes/user"));
 // Shop
 app.use(prefix + "/shop", require("./routes/shop/shop"));
 
+// Wallet Shop
+app.use(prefix + "/wallet", require("./routes/shop/wallet"));
+
 // Wallet Tossagun
 app.use(prefix + "/tossagun/wallet", require("./routes/tossagun/wallet"));
-app.use(prefix + "/tossagun/express", require("./routes/tossagun/express"));
+
+app.use(prefix + "/express", require("./routes/tossagun/express"));
 
 const port = process.env.PORT || 2020;
 

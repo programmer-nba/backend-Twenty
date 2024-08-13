@@ -2,7 +2,17 @@ const { PercentCourier } = require("../../models/tossagun/express/percent.expres
 
 module.exports.createPercent = async (req, res) => {
 	try {
-
+		const check_courier = await PercentCourier.findOne({ courier_code: req.body.courier_code });
+		if (check_courier) {
+			return res.status(400).send({ status: false, message: "รหัสคูเรียนี้มีในระบบแล้ว" });
+		} else {
+			const new_courier = new PercentCourier({
+				...req.body
+			});
+			if (!new_courier)
+				return res.status(401).send({ status: false, message: "เพิ่มข้อมูลไม่สำเร็จ กรุณาทำรายอีกครั้ง" });
+			return res.status(200).send({ status: true, message: 'เพิ่มข้อมูลสำเร็จ', data: new_courier });
+		}
 	} catch (error) {
 		console.log(error)
 		return res.status(500).send({ message: "Internal Server Error" })

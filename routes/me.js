@@ -9,7 +9,7 @@ router.post("/", auth, async (req, res) => {
 		const user = await Users.findOne({ _id: id });
 		if (!user)
 			return res.status(402).send({ status: false, message: 'ไม่พบข้อมูลผู้ใช้งานดังกล่าว' })
-		return res.status(201).send({ name: user.fristname, position: user.position, status: user.status });
+		return res.status(201).send({ name: user.fristname, position: user.position, status: user.status, data: user });
 	} catch (error) {
 		console.log(error)
 		return res.status(500).send({ message: "Internal Server Error" })
