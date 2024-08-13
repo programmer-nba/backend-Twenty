@@ -3,6 +3,12 @@ const express = require("../../controllers/tossagun/express.controller");
 const percent = require("../../controllers/tossagun/percen.express.controller");
 
 router.post("/price", express.getPriceList);
+router.post("/booking", express.booking);
+router.post("/label", express.labelHtml);
+
+router.get("/booking/all", express.getBookingAll);
+router.get("/booking/:id", express.getBookingById);
+router.get("/booking/shop/:shopid", express.getBookingByShop);
 
 router.post("/percent", percent.createPercent);
 router.get("/percent", percent.getPercentExpress);
