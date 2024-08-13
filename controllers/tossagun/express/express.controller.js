@@ -1,11 +1,11 @@
 const axios = require("axios");
 const dayjs = require("dayjs");
-const { PercentCourier } = require("../../models/tossagun/express/percent.express.model");
-const { insuredExpress } = require("../../models/tossagun/express/insured.model.js");
-const { Shops } = require("../../models/shop/shop.model");
-const { OrderExpress } = require("../../models/tossagun/express/order.express.model.js");
-const { TossagunBookings } = require("../../models/tossagun/express/tossagun.order.model.js");
-const { WalletHistorys } = require("../../models/shop/wallet.history.model.js");
+const { PercentCourier } = require("../../../models/tossagun/express/percent.express.model.js");
+const { insuredExpress } = require("../../../models/tossagun/express/insured.model.js");
+const { Shops } = require("../../../models/shop/shop.model.js");
+const { OrderExpress } = require("../../../models/tossagun/express/order.express.model.js");
+const { TossagunBookings } = require("../../../models/tossagun/express/tossagun.order.model.js");
+const { WalletHistorys } = require("../../../models/shop/wallet.history.model.js");
 
 module.exports.getPriceList = async (req, res) => {
 	try {

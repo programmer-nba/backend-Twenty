@@ -1,4 +1,4 @@
-const { PercentCourier } = require("../../models/tossagun/express/percent.express.model");
+const { PercentCourier } = require("../../../models/tossagun/express/percent.express.model");
 
 module.exports.createPercent = async (req, res) => {
 	try {
