@@ -12,7 +12,7 @@ module.exports.create = async (req, res) => {
 				.send({ message: error.details[0].message, status: false });
 		} else {
 			const customer = await Users.findOne({ _id: req.body.shop_customer_id });
-			if (customer.username !== 'customer') {
+			if (customer.position !== 'customer') {
 				return res
 					.status(401)
 					.send({ status: false, message: 'ผู้ใช้งานดังกล่าวไม่สามารถเพิ่มร้านค้าได้' });
