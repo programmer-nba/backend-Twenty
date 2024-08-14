@@ -3,7 +3,7 @@ const axios = require("axios");
 
 router.post("/", async (req, res) => {
 	try {
-		// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 		const value = {
 			auth_token: process.env.TOSSAGUN_TOKEN
 		};
