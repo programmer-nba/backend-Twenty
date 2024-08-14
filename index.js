@@ -31,6 +31,7 @@ app.use(prefix + "/wallet", require("./routes/shop/wallet"));
 app.use(prefix + "/tossagun/wallet", require("./routes/tossagun/wallet"));
 
 app.use(prefix + "/express", require("./routes/tossagun/express"));
+app.use(prefix + "/artwork", require("./routes/tossagun/artwork"));
 
 const port = process.env.PORT || 2020;
 

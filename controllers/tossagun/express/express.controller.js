@@ -54,6 +54,16 @@ module.exports.getPriceList = async (req, res) => {
 
 		for (const ob of Object.keys(obj)) {
 			if (obj[ob].available) {
+				// if (
+				// obj[ob].courier_code === 'ECP' ||
+				// obj[ob].courier_code === 'KRYP' ||
+				// obj[ob].courier_code === 'KRYX' ||
+				// obj[ob].courier_code === 'EMST' ||
+				// obj[ob].courier_code === 'KRYD'
+				// ) {
+				// console.log(`Encountered "${obj[ob].courier_code}". Skipping this iteration.`);
+				// continue; // ข้ามไปยังรอบถัดไป
+				// }
 				if (req.body.cod_amount > 0 && obj[ob].courier_code == 'ECP') {
 					console.log('Encountered "ECP". Skipping this iteration.');
 					continue; // ข้ามไปยังรอบถัดไป
