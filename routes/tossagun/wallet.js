@@ -12,7 +12,6 @@ router.post("/", async (req, res) => {
 				"Accept-Encoding": "gzip,deflate,compress",
 			}
 		});
-		console.log(resp.data)
 		if (resp.data.status) {
 			return res.status(200).send({ status: true, message: 'ยอดเงินคงเหลือ', wallet: resp.data.wallet })
 		} else {
