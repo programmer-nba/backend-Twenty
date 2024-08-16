@@ -9,7 +9,6 @@ module.exports.getProductAll = async (req, res) => {
 				"auth-token": process.env.TOSSAGUN_TOKEN
 			}
 		});
-
 		if (resp.data.status) {
 			return res.status(200).send({ status: true, message: 'ดึงข้อมูลสำเร็จ', data: resp.data.data })
 		} else {

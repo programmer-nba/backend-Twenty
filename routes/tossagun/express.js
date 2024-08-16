@@ -6,6 +6,7 @@ const box = require("../../controllers/tossagun/express/box.express.controller")
 router.post("/price", express.getPriceList);
 router.post("/booking", express.booking);
 router.post("/label", express.labelHtml);
+router.post("/tracking/:id", express.tracking);
 
 router.get("/booking/all", express.getBookingAll);
 router.get("/booking/:id", express.getBookingById);

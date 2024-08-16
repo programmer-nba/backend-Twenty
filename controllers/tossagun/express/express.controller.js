@@ -263,9 +263,35 @@ module.exports.labelHtml = async (req, res) => {
 	}
 };
 
+module.exports.tracking = async (req, res) => {
+	try {
+		const tracking = req.params.id;
+
+		const resp = await axios.post(`${process.env.TOSSAGUN_API}/express/shippop/tracking/${tracking}`, {
+			headers: {
+				"Accept-Encoding": "gzip,deflate,compress",
+				"auth-token": `Bearer ${process.env.TOSSAGUN_TOKEN}`
+			},
+		});
+
+		if (!resp) {
+			return res
+				.status(400)
+				.send({ status: false, message: "ไม่สามารถหาหมายเลข Tracking ได้" })
+		}
+		return res
+			.status(200)
+			.send({ status: true, data: resp.data.data });
+
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "Internal Server Error" })
+	}
+};
+
 module.exports.getBookingAll = async (req, res) => {
 	try {
-		const booking = await OrderExpress.find();
+		const booking = await TossagunBookings.find();
 		if (!booking)
 			return res.status(408).send({
 				status: false,
