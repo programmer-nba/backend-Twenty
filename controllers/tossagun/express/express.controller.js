@@ -5,6 +5,7 @@ const { insuredExpress } = require("../../../models/tossagun/express/insured.mod
 const { Shops } = require("../../../models/shop/shop.model.js");
 const { OrderExpress } = require("../../../models/tossagun/express/order.express.model.js");
 const { TossagunBookings } = require("../../../models/tossagun/express/tossagun.order.model.js");
+const { DropOffExpress } = require("../../../models/tossagun/express/order.dropoff.modej.js");
 const { WalletHistorys } = require("../../../models/shop/wallet.history.model.js");
 
 module.exports.getPriceList = async (req, res) => {
@@ -176,6 +177,7 @@ module.exports.booking = async (req, res) => {
 			shop_id: req.body.shop_id,
 			purchase_id: String(resp.data.data.purchase_id),
 			invoice: invoice,
+			type: "Express",
 			total: Number(total.toFixed(2)),
 			total_cost_tg: Number(cost_tg.toFixed(2)),
 			total_cost: Number(total.toFixed(2)),
@@ -289,6 +291,66 @@ module.exports.tracking = async (req, res) => {
 	}
 };
 
+module.exports.dropoff = async (req, res) => {
+	try {
+
+		const resp = await axios.post(`${process.env.TOSSAGUN_API}/api/api_express/dropoff`, req.body.product_detail, {
+			headers: {
+				"Accept-Encoding": "gzip,deflate,compress",
+				"auth-token": `Bearer ${process.env.TOSSAGUN_TOKEN}`
+			},
+		});
+
+		const invoice = await invoiceNumber();
+		const obj = resp.data.data;
+		const new_data = [];
+
+		for (const ob of Object.keys(obj)) {
+			const percel = req.body.product_detail[ob];
+			// console.log(obj[ob])
+			const v = {
+				...percel,
+				tracking_code: obj[ob].tracking_code,
+				courier_code: obj[ob].courier_code,
+				courier_tracking_code: percel.pre_barcode,
+				invoice: invoice,
+				purchase_id: String(resp.data.purchase_id),
+				shop_id: req.body.shop_id,
+				timestamp: dayjs(Date.now()).format(),
+			};
+			// console.log(v)
+			new_data.push(v);
+		};
+
+		const o = {
+			shop_id: req.body.shop_id,
+			purchase_id: String(resp.data.purchase_id),
+			invoice: invoice,
+			product: new_data,
+			type: "Drop Off",
+			status: [
+				{ name: "รับพัสดุ", timestamp: dayjs(Date.now()).format() }
+			],
+			total: resp.data.total_price,
+			total_cod_charge: resp.data.total_cod_charge,
+			total_cod_vat: resp.data.total_cod_charge_vat,
+			timestamp: dayjs(Date.now()).format(),
+		};
+
+		const createOrder = await OrderExpress.create(o);
+		const CreateOrderDropOff = await DropOffExpress.insertMany(new_data);
+
+		if (!createOrder && !CreateOrderDropOff) {
+			console.log("ไม่สามารถสร้างข้อมูล booking ได้")
+		}
+
+		return res.status(200).send({ status: true, data: o, invoice: invoice })
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "Internal Server Error" })
+	}
+};
+
 module.exports.getBookingAll = async (req, res) => {
 	try {
 		const booking = await TossagunBookings.find();
@@ -325,10 +387,51 @@ module.exports.getBookingByShop = async (req, res) => {
 		const id = req.params.shopid;
 		const pipelint = [
 			{
-				$match: { shop_id: id },
+				$match: {
+					$and: [{ shop_id: id }, { type: "Express" }]
+				},
 			},
 		];
 		const booking = await OrderExpress.aggregate(pipelint);
+		if (!booking)
+			return res.status(408).send({
+				status: false,
+				message: "ดึงข้อมูลไม่สำเร็จ!",
+			});
+		return res.status(201).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: booking });
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "Internal Server Error" })
+	}
+};
+
+module.exports.getDropOffAll = async (req, res) => {
+	try {
+		const booking = await DropOffExpress.find();
+		if (!booking)
+			return res.status(408).send({
+				status: false,
+				message: "ดึงข้อมูลไม่สำเร็จ!",
+			});
+		return res.status(201).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: booking });
+	} catch (error) {
+		console.log(error)
+		return res.status(500).send({ message: "Internal Server Error" })
+	}
+};
+
+module.exports.getDropOffByShop = async (req, res) => {
+	try {
+		const id = req.params.shopid;
+		const pipelint = [
+			{
+				$match: {
+					$and: [{ shop_id: id }, { type: "Drop Off" }]
+				},
+			},
+		];
+		const booking = await OrderExpress.aggregate(pipelint);
+		console.log(booking)
 		if (!booking)
 			return res.status(408).send({
 				status: false,

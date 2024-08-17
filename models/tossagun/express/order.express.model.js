@@ -4,6 +4,11 @@ const Joi = require("joi");
 const OrderExpressSchema = new mongoose.Schema({
     shop_id: { type: String, required: true },
     invoice: { type: String, required: false, default: "ไม่มี" },
+    type: {
+        type: String,
+        enum: ["Express", "Drop Off"],
+        required: false, default: "Express",
+    },
     invoice_full: { type: String, default: "ไม่มี" },
     total: { type: Number, required: false },
     total_cost: { type: Number, required: false, default: 0 },
