@@ -124,7 +124,10 @@ module.exports.getAdmin = async (req, res) => {
 		const pipelint = [
 			{
 				$match: {
-					position: 'admin'
+					$or: [
+						{ position: 'admin' },
+						{ position: 'sale' },
+					]
 				}
 			}
 		];

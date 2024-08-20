@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
 	province: { type: String, required: false, default: "" },
 	postcode: { type: String, required: false, default: "" },
 	position: {
-		type: String, enum: ["admin", "employee", "customer"],
+		type: String, enum: ["admin", "sale", "employee", "customer"],
 		required: true,
 	},
 	status: { type: Boolean, require: false, default: true },
