@@ -300,7 +300,6 @@ module.exports.dropoff = async (req, res) => {
 				"auth-token": `Bearer ${process.env.TOSSAGUN_TOKEN}`
 			},
 		});
-
 		const invoice = await invoiceNumber();
 		const obj = resp.data.data;
 		const new_data = [];
@@ -431,7 +430,6 @@ module.exports.getDropOffByShop = async (req, res) => {
 			},
 		];
 		const booking = await OrderExpress.aggregate(pipelint);
-		console.log(booking)
 		if (!booking)
 			return res.status(408).send({
 				status: false,
