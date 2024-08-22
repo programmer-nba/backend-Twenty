@@ -76,14 +76,18 @@ module.exports.getPriceList = async (req, res) => {
 				}
 				// คำนวนต้นทุนของร้านค้า
 				let cost = Number(obj[ob].price);
-				let price = Math.ceil(cost + p.profit);
-				let profit = price - cost;
+				let cost_shop = Math.ceil(cost + p.profit);
+				let price = Math.ceil(cost_shop + p.profit_shop);
+				let profit = cost_shop - cost;
+				let profit_shop = price - cost_shop;
 
 				v = {
 					...obj[ob],
 					price_remote_area: 0,
 					cost: cost,
+					cost_shop: cost_shop,
 					profit: profit,
+					profit_shop: profit_shop,
 					cod_amount: Number(req.body.cod_amount.toFixed()),
 					fee_cod: 0,
 					price: Number(price.toFixed()),
@@ -131,8 +135,13 @@ module.exports.getPriceList = async (req, res) => {
 
 module.exports.booking = async (req, res) => {
 	try {
-		const invoice = await invoiceNumber();
+		const shop = await Shops.findOne({ _id: req.body.shop_id });
+		const amount = req.body.product_detail.reduce((sum, el) => sum + el.total, 0);
+		if (shop.shop_wallet < amount) {
+			return res.status(405).send({ status: false, message: 'ยอดเงินไม่เพียงพอต่อการทำรายการ' })
+		}
 
+		const invoice = await invoiceNumber();
 		const resp = await axios.post(`${process.env.TOSSAGUN_API}/api/api_express/booking`, req.body.product_detail, {
 			headers: {
 				"Accept-Encoding": "gzip,deflate,compress",
@@ -146,9 +155,9 @@ module.exports.booking = async (req, res) => {
 
 		const obj = resp.data.data.data;
 		const new_data = [];
-		// console.log(resp)
 		let cost = 0;
 		let cost_tg = 0;
+		let cost_shop = 0;
 		let total = 0;
 		let cod = 0;
 		let cod_charge = 0;
@@ -167,6 +176,7 @@ module.exports.booking = async (req, res) => {
 			new_data.push(v);
 			cost += percel.cost;
 			cost_tg += percel.cost_tg;
+			cost_shop += percel.cost_shop;
 			total += percel.total;
 			cod += percel.cod_amount;
 			cod_charge += percel.price_cod;
@@ -181,10 +191,10 @@ module.exports.booking = async (req, res) => {
 			total: Number(total.toFixed(2)),
 			total_cost_tg: Number(cost_tg.toFixed(2)),
 			total_cost: Number(total.toFixed(2)),
+			total_cost_shop: Number(cost_shop.toFixed(2)),
 			total_cod: Number(cod.toFixed(2)),
 			total_cod_charge: Number(cod_charge.toFixed(2)),
 			total_cod_vat: Number(cod_vat.toFixed(2)),
-			// purchase_id: String(resp.data.purchase_id),
 			product: new_data,
 			status: [
 				{ name: "ชำระเงิน", timestamp: dayjs(Date.now()).format() }
@@ -199,7 +209,6 @@ module.exports.booking = async (req, res) => {
 			console.log("ไม่สามารถสร้างข้อมูล booking ได้")
 		}
 
-		const shop = await Shops.findOne({ _id: req.body.shop_id });
 		const wallet = shop.shop_wallet - total;
 		const findShop = await Shops.findByIdAndUpdate(req.body.shop_id, { shop_wallet: wallet }, { useFindAndModify: false });
 		if (!findShop) {

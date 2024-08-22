@@ -1,6 +1,8 @@
 const dayjs = require("dayjs");
 const { BoxExpress } = require("../../../models/tossagun/express/box.express.model");
 const { BoxOrders } = require("../../../models/tossagun/express/box.order.model");
+const { Shops } = require("../../../models/shop/shop.model");
+const { WalletHistorys } = require("../../../models/shop/wallet.history.model");
 
 module.exports.create = async (req, res) => {
 	try {
@@ -126,11 +128,41 @@ module.exports.createOrder = async (req, res) => {
 			...req.body,
 			timestamp: dayjs(Date.now()).format(""),
 		});
+
 		if (!new_order)
 			return res.status(403).send({
 				status: false,
 				message: "มีบางอย่างผิดพลาด",
 			});
+
+		const shop = await Shops.findOne({ _id: req.body.shop_id });
+		if (!shop)
+			return res.status(403).send({
+				status: false,
+				message: "ไม่พบร้านค้าที่ทำรายการ",
+			});
+
+		const wallet = shop.shop_wallet + req.body.total;
+		const findShop = await Shops.findByIdAndUpdate(req.body.shop_id, { shop_wallet: wallet }, { useFindAndModify: false });
+		if (!findShop) {
+			return res.status(404).send({ status: false, message: "ไม่สามารถค้นหาร้านที่ท่านระบุได้" })
+		}
+
+		let doto = {
+			shop_id: req.body.shop_id,
+			orderid: req.body.invoice,
+			name: `รายการขายกล่องพัสดุเลขที่ ${req.body.invoice}`,
+			type: `เงินเข้า`,
+			amount: req.body.total,
+			before: shop.shop_wallet,
+			after: wallet,
+			timestamp: dayjs(Date.now()).format(""),
+		};
+		const record = await WalletHistorys.create(doto)
+		if (!record) {
+			return res.status(400).send({ status: false, message: "ไม่สามารถสร้างประวัติเงินออกได้" })
+		}
+
 		new_order.save();
 		return res.status(201).send({ status: true, message: 'เพิ่มรายงานสำเร็จ' })
 	} catch (error) {
