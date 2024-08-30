@@ -4,6 +4,10 @@ const percent = require("../../controllers/tossagun/topup/percent.express.contro
 
 router.post("/booking", topup.bookingTopup);
 
+router.get("/booking/all", topup.getBookingAll);
+router.get("/booking/:id", topup.getBookingById);
+router.get("/booking/shop/:shopid", topup.getBookingByShop);
+
 router.post("/percent", percent.createPercent);
 router.get("/percent", percent.getPercentTopup);
 router.get("/percent/:id", percent.getPercentById);

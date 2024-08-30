@@ -34,6 +34,9 @@ app.use(prefix + "/express", require("./routes/tossagun/express"));
 app.use(prefix + "/artwork", require("./routes/tossagun/artwork"));
 app.use(prefix + "/topup", require("./routes/tossagun/topup"));
 
+// Receipt
+app.use(prefix + "/receipt", require("./routes/more/receipt"));
+
 const port = process.env.PORT || 2020;
 
 app.listen(port, () => {
